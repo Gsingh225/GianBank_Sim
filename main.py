@@ -11,7 +11,7 @@ async def initalizeDB():
     await Tortoise.generate_schemas()
 
 async def create_user(username: str, password: str, cash: float) -> None:
-    user = User(username=username, password=password, cash=cash)
+    user = await User(username=username, password=password, cash=cash)
     await user.save()
 
 async def get_user_with_username(username: str):
@@ -22,6 +22,8 @@ async def deduct_from_bal(username: str, deduct: float) -> None:
     user = get_user_with_username(username=username)
     user.cash -= deduct
     await user.save()
+
+initalizeDB()
 
 app = Flask(__name__)
 
@@ -45,9 +47,13 @@ def register():
         username = request.form['userr']
         passs = request.form['passs']
         cash = request.form['cash']
-        return 'hi'
+        try:
+            create_user(username=username,  password=passs, cash=cash)
+        except:
+            return render_template('register.html', err_msg='<h5 id="oops">Account Creation Failed: try entering a number less than 10 total digits, and up to only 2 decimal places like "13462.33". If you have complied with that requirment, simply pick another username,  as that one may be taken</h5>')
+        return f'successfull, user is {username} and pass is {passs} and money is {cash}'
     elif request.method == 'GET':
-        return render_template('register.html')
+        return render_template('register.html', err_msg='')
 
 if __name__ == '__main__':
     app.run()
