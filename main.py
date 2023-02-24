@@ -41,13 +41,22 @@ def index():
         username = request.form['user']
         pas = request.form['pas']
         action = request.form['action']
+        """
+        try:
+            user = get_user_with_username(username=username)
+        except:
+            return render_template('index.html', er="<h5>Account does not exist</h5>")
         #return f'user name is {username}, password is {pas}  and action requested is {action}'
+        """
         if action == 'login':
-            return render_template('acc.html')
+            try:
+                user = get_user_with_username(username=username)
+            except:
+                return render_template('index.html', er="<h5>Account does not exist</h5>")
         elif action == 'register':
             return redirect(url_for('register'))
     elif request.method == 'GET':
-        return render_template('index.html')
+        return render_template('index.html', er='')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -64,6 +73,11 @@ def register():
         return f'successfull, user is {username} and pass is **|{passs}|** and money in account is {cash}. Please return to gianbank.tk and login'
     elif request.method == 'GET':
         return render_template('register.html', err_msg='')
+
+@app.route('/dashboard')
+def dashboard():
+    username = request.args.get('username')
+    cost = request.args.get('cash')
 
 async def main():
     await initalizeDB()
