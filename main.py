@@ -24,7 +24,11 @@ async def deduct_from_bal(username: str, deduct: float) -> None:
     user.cash -= deduct
     await user.save()
 
-initalizeDB()
+#warning dev only func follows this line, will delete all users
+async def delete_all_users():
+    await User.all().delete
+#end of the func
+
 
 app = Flask(__name__)
 
@@ -58,6 +62,13 @@ def register():
     elif request.method == 'GET':
         return render_template('register.html', err_msg='')
 
-if __name__ == '__main__':
+async def main():
+    await initalizeDB()
     app.run()
+
+if __name__ == '__main__':
+    import asyncio
+    delete_all_users() #delete line if using
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
     
