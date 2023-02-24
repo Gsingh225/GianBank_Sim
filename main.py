@@ -1,6 +1,28 @@
 from flask import Flask, render_template,  request, redirect, url_for
 from tortoise import fields, models, Tortoise
 
+class User(models.Model):
+    username = fields.CharField(max_length=50, unique=True)
+    password = fields.CharField(max_length=50)
+    cash = fields.DecimalField(max_digits=10, decimal_places=2)
+
+async def initalizeDB():
+    await Tortoise.init(db_url='sqlite://db.users', modules={'models': ['__main__']})
+    await Tortoise.generate_schemas()
+
+async def create_user(username: str, password: str, cash: float) -> None:
+    user = User(username=username, password=password, cash=cash)
+    await user.save()
+
+async def get_user_with_username(username: str):
+    user = await User.get(username=username)
+    return user
+
+async def deduct_from_bal(username: str, deduct: float) -> None:
+    user = get_user_with_username(username=username)
+    user.cash -= deduct
+    await user.save()
+
 app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
