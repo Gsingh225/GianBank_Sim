@@ -12,7 +12,10 @@ async def initalizeDB():
     await Tortoise.generate_schemas()
 
 async def create_user(username: str, password: str, cash: float) -> None:
-    user = await User(username=username, password=password, cash=float(cash))
+    if isinstance(cash, float):
+        user = await User(username=username, password=password, cash=cash)
+    else:
+        raise ValueError('Please use a decimal num like 1456.44, must be less than 10 digits')
     await user.save()
 
 async def get_user_with_username(username: str):
@@ -53,12 +56,12 @@ def register():
         passs = request.form['passs']
         cash = request.form['cash']
         try:
-            create_user(username=username,  password=passs, cash=cash)
+            create_user(username=username,  password=passs, cash=float(cash))
         except ValueError:
             return render_template('register.html', err_msg='<h5 id="oops">Account Creation Failed: try entering a number less than 10 total digits, and up to only 2 decimal places like "13462.33" in the funding field.</h5>')
         except IntegrityError:
             return render_template('register.html', err_msg='<h5 id="oops">The Username is taken.</h5>')
-        return f'successfull, user is {username} and pass is {passs} and money is {cash}'
+        return f'successfull, user is {username} and pass is **|{passs}|** and money in account is {cash}. Please return to gianbank.tk and login'
     elif request.method == 'GET':
         return render_template('register.html', err_msg='')
 
@@ -71,4 +74,3 @@ if __name__ == '__main__':
     delete_all_users() #delete line if using
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())
-    
