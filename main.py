@@ -53,7 +53,7 @@ async def get_all() -> None:
 app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
-def index():
+async def index():
     if request.method == 'POST':
         username = request.form['user']
         pas = request.form['pas']
@@ -81,7 +81,7 @@ def index():
         return render_template('index.html', er='')
 
 @app.route('/register', methods=['GET', 'POST'])
-def register():
+async def register():
     if request.method == 'POST':
         username = request.form['userr']
         passs = request.form['passs']
@@ -97,7 +97,7 @@ def register():
         return render_template('register.html', err_msg='')
 
 @app.route('/dashboard')
-def dashboard():
+async def dashboard():
     username = request.args.get('username')
     cash = request.args.get('cash')
     return f'User is {username} and cash on hand is {cash}'
