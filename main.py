@@ -7,6 +7,7 @@ class User(Model):
     username = fields.CharField(max_length=50, unique=True)
     password = fields.CharField(max_length=50)
     cash = fields.DecimalField(max_digits=10, decimal_places=2)
+    tradecash = fields.DecimalField(max_digits=10, decimal_places=2)
     def __str__(self) -> str:
         return self.name
     class  Meta:
@@ -18,7 +19,7 @@ async def initalizeDB():
 
 async def create_user(username: str, password: str, cash: float) -> None:
     if isinstance(cash, float):
-        user = await User(username=username, password=password, cash=cash)
+        user = await User(username=username, password=password, cash=cash, tradecash=0)
     else:
         raise ValueError('Please use a decimal num like 1456.44, must be less than 10 digits')
     await user.save()
@@ -70,7 +71,8 @@ async def index():
                 user1 = await get_user_with_username(username=username)
                 temp1 = user1.username
                 temp2 = user1.cash
-                return redirect(url_for('dashboard', username=temp1, cash=temp2))
+                temp3 = user1.tradecash
+                return redirect(url_for('dashboard', username=temp1, cash=temp2, tradecash=temp3))
             except Exception as e:
                 get_all()
                 print(e)
@@ -96,11 +98,14 @@ async def register():
     elif request.method == 'GET':
         return render_template('register.html', err_msg='')
 
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['POST', 'GET'])
 async def dashboard():
     username = request.args.get('username')
     cash = request.args.get('cash')
-    return f'User is {username} and cash on hand is {cash}'
+    tradecash = request.args.get('tradecash')
+    if request.method == 'GET':
+        return f'User is {username} and cash on hand is {cash}'
+        return render_template('acc.html', user=username, cash=cash, tradecash=tradecash)
 
 async def main():
     await initalizeDB()
