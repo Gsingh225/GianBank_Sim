@@ -22,6 +22,12 @@ async def get_user_with_username(username: str):
     user = await User.get(username=username)
     return user
 
+async def get_user(username: str) -> tuple[str: float]:
+    user = await User.get(username=username)
+    password = user.password
+    cash = user.cash
+    return password, cash
+
 async def deduct_from_bal(username: str, deduct: float) -> None:
     user = await get_user_with_username(username=username)
     user.cash -= deduct
@@ -51,6 +57,7 @@ def index():
         if action == 'login':
             try:
                 user = get_user_with_username(username=username)
+                return redirect(url_for('dashboard', username=user.username, cash=user.cash))
             except:
                 return render_template('index.html', er="<h5>Account does not exist</h5>")
         elif action == 'register':
@@ -77,7 +84,8 @@ def register():
 @app.route('/dashboard')
 def dashboard():
     username = request.args.get('username')
-    cost = request.args.get('cash')
+    cash = request.args.get('cash')
+    return f'User is {username} and cash on hand is {cash}'
 
 async def main():
     await initalizeDB()
