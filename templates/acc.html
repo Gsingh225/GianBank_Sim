@@ -1,7 +1,68 @@
 <!DOCTYPE html>
 <head>
     <title>Gianbank Dashboard</title>
+    <style>
+        body{
+            margin: none;
+            background-color: #0091FF;
+            color: white;
+        }
+        #top{
+            text-align: center;
+            padding: 10px;
+        }
+        .acc{
+            display: flex;
+            justify-content: space-between;
+            border: solid white 5px;
+            border-radius: 25px;
+        }
+        .kidz{
+            padding: 10px;
+            margin: 10px;
+        }
+        #right{
+            border-left: solid white 1px;
+        }
+        .byebye{
+            border: none;
+            width: 100px;
+            height: 40px;
+            border-radius: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Worked</h1>
+    <div id="top">
+        <h1>Welcome {{user}}</h1>
+        <form method="post">
+            <button type="submit" name="act" value="logout" class="byebye">Logout</button>
+        </form>
+    </div>
+    <div class="acc kidz">
+        <div class="left kidz">
+            <h1>Gian Prefered Account</h1>
+        </div>
+        <div class="right kidz">
+            <h1>${{cash}}</h1>
+        </div>
+    </div>
+    <div class="acc kidz">
+        <div class="left kidz">
+            <h1>Gian Trading Account</h1>
+        </div>
+        <div class="right kidz">
+            <h1>${{tradecash}}</h1>
+        </div>
+    </div>
+    <div class="acc kidz">
+        <div class="left kidz">
+            <h1>Gian Card</h1>
+        </div>
+        <div class="right kidz">
+            <h1>Number: {{giancard}}</h1>
+            <p>Go Invest In GianTrader Now!</p>
+        </div>
+    </div>
+    <h2>GianCard is NOT a real credit or debit card, it is just for simulation purpouses on giantrader, thus no experation date</h2>
 </body>

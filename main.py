@@ -2,12 +2,14 @@ from flask import Flask, render_template,  request, redirect, url_for
 from tortoise import fields, models, Tortoise
 from tortoise.exceptions import IntegrityError
 from tortoise.models import Model
+import random
 
 class User(Model):
     username = fields.CharField(max_length=50, unique=True)
     password = fields.CharField(max_length=50)
     cash = fields.DecimalField(max_digits=10, decimal_places=2)
     tradecash = fields.DecimalField(max_digits=10, decimal_places=2)
+    giancard = fields.IntField(unique=True)
     def __str__(self) -> str:
         return self.name
     class  Meta:
@@ -19,7 +21,14 @@ async def initalizeDB():
 
 async def create_user(username: str, password: str, cash: float) -> None:
     if isinstance(cash, float):
-        user = await User(username=username, password=password, cash=cash, tradecash=0)
+        success = False
+        while success != True:
+            try:
+                card = random.randint(1000000000, 9999999999)
+                user = await User(username=username, password=password, cash=cash, tradecash=0, giancard=card)
+                success = True
+            except:
+                None
     else:
         raise ValueError('Please use a decimal num like 1456.44, must be less than 10 digits')
     await user.save()
@@ -72,7 +81,8 @@ async def index():
                 temp1 = user1.username
                 temp2 = user1.cash
                 temp3 = user1.tradecash
-                return redirect(url_for('dashboard', username=temp1, cash=temp2, tradecash=temp3))
+                temp4 = user1.giancard
+                return redirect(url_for('dashboard', username=temp1, cash=temp2, tradecash=temp3, giancard=temp4))
             except Exception as e:
                 get_all()
                 print(e)
@@ -103,9 +113,12 @@ async def dashboard():
     username = request.args.get('username')
     cash = request.args.get('cash')
     tradecash = request.args.get('tradecash')
+    giancard = request.args.get('giancard')
     if request.method == 'GET':
         return f'User is {username} and cash on hand is {cash}'
-        return render_template('acc.html', user=username, cash=cash, tradecash=tradecash)
+        return render_template('acc.html', user=username, cash=cash, tradecash=tradecash, giancard=giancard)
+    elif request.method == 'POST':
+        return redirect(url_for('index'))
 
 async def main():
     await initalizeDB()
