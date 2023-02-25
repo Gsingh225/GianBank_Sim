@@ -1,11 +1,16 @@
 from flask import Flask, render_template,  request, redirect, url_for
 from tortoise import fields, models, Tortoise
 from tortoise.exceptions import IntegrityError
+from tortoise.models import Model
 
-class User(models.Model):
+class User(Model):
     username = fields.CharField(max_length=50, unique=True)
     password = fields.CharField(max_length=50)
     cash = fields.DecimalField(max_digits=10, decimal_places=2)
+    def __str__(self) -> str:
+        return self.name
+    class  Meta:
+        table:  str = 'users'
 
 async def initalizeDB():
     await Tortoise.init(db_url='sqlite://usersdb.sqlite3', modules={'models': ['__main__']})
@@ -22,6 +27,7 @@ async def get_user_with_username(username: str):
     user = await User.get(username=username)
     return user
 
+
 async def get_user(username: str) -> tuple[str: float]:
     user = await User.get(username=username)
     password = user.password
@@ -35,7 +41,12 @@ async def deduct_from_bal(username: str, deduct: float) -> None:
 
 #warning dev only func follows this line, will delete all users
 async def delete_all_users():
-    await User.all().delete
+    await User.all().delete()
+
+async def get_all() -> None:
+    users = await User.all()
+    for user in users:
+        print(user)
 #end of the func
 
 
@@ -56,10 +67,14 @@ def index():
         """
         if action == 'login':
             try:
-                user = get_user_with_username(username=username)
-                return redirect(url_for('dashboard', username=user.username, cash=user.cash))
-            except:
-                return render_template('index.html', er="<h5>Account does not exist</h5>")
+                user1 = get_user_with_username(username=username)
+                temp1 = user1.username
+                temp2 = user1.cash
+                return redirect(url_for('dashboard', username=temp1, cash=temp2))
+            except Exception as e:
+                get_all()
+                print(e)
+                return render_template('index.html', er=f"<h5>Account does not exist  {e}</h5>")
         elif action == 'register':
             return redirect(url_for('register'))
     elif request.method == 'GET':
