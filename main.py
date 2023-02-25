@@ -25,7 +25,7 @@ async def create_user(username: str, password: str, cash: float) -> None:
         while success != True:
             try:
                 card = random.randint(1000000000, 9999999999)
-                user = await User(username=username, password=password, cash=cash, tradecash=0, giancard=card)
+                user = await User(username=username, password=password, cash=cash, tradecash=0.00, giancard=card)
                 success = True
             except:
                 None
@@ -115,7 +115,7 @@ async def dashboard():
     tradecash = request.args.get('tradecash')
     giancard = request.args.get('giancard')
     if request.method == 'GET':
-        return f'User is {username} and cash on hand is {cash}'
+        #return f'User is {username} and cash on hand is {cash}'
         return render_template('acc.html', user=username, cash=cash, tradecash=tradecash, giancard=giancard)
     elif request.method == 'POST':
         return redirect(url_for('index'))
