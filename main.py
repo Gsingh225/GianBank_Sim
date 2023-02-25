@@ -67,7 +67,7 @@ async def index():
         """
         if action == 'login':
             try:
-                user1 = get_user_with_username(username=username)
+                user1 = await get_user_with_username(username=username)
                 temp1 = user1.username
                 temp2 = user1.cash
                 return redirect(url_for('dashboard', username=temp1, cash=temp2))
@@ -87,7 +87,7 @@ async def register():
         passs = request.form['passs']
         cash = request.form['cash']
         try:
-            create_user(username=username,  password=passs, cash=float(cash))
+            await create_user(username=username,  password=passs, cash=float(cash))
         except ValueError:
             return render_template('register.html', err_msg='<h5 id="oops">Account Creation Failed: try entering a number less than 10 total digits, and up to only 2 decimal places like "13462.33" in the funding field.</h5>')
         except IntegrityError:
