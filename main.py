@@ -122,7 +122,7 @@ async def dashboard():
 
 async def main():
     await initalizeDB()
-    app.run()
+    app.run(host='0.0.0.0')
 
 if __name__ == '__main__':
     import asyncio
